@@ -1,7 +1,7 @@
 defaults: &defaults
   machine: true
   environment:
-    GRUNTWORK_INSTALLER_VERSION: v0.0.21
+    GRUNTWORK_INSTALLER_VERSION: v0.0.22
     TERRATEST_LOG_PARSER_VERSION: v0.13.13
     KUBERGRUNT_VERSION: v0.3.9
     HELM_VERSION: v2.11.0
@@ -17,16 +17,8 @@ install_gruntwork_utils: &install_gruntwork_utils
   name: install gruntwork utils
   command: |
     curl -Ls https://raw.githubusercontent.com/gruntwork-io/gruntwork-installer/master/bootstrap-gruntwork-installer.sh | bash /dev/stdin --version "${GRUNTWORK_INSTALLER_VERSION}"
-    #gruntwork-install --module-name "gruntwork-module-circleci-helpers" --repo "https://github.com/gruntwork-io/module-ci" --tag "${MODULE_CI_VERSION}"
-    gruntwork-install --binary-name "terratest_log_parser" --repo "https://github.com/gruntwork-io/terratest" --tag "${TERRATEST_LOG_PARSER_VERSION}"
-    configure-environment-for-gruntwork-module \
-      --circle-ci-2-machine-executor \
-      --terraform-version ${TERRAFORM_VERSION} \
-      --terragrunt-version ${TERRAGRUNT_VERSION} \
-      --packer-version ${PACKER_VERSION} \
-      --use-go-dep \
-      --go-version ${GOLANG_VERSION} \
-      --go-src-path test
+#    gruntwork-install --binary-name "kubergrunt" --repo "https://github.com/gruntwork-io/kubergrunt" --tag "v0.5.8"
+
 
 install_helm_client: &install_helm_client
   name: install helm client
