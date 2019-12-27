@@ -105,7 +105,9 @@ jobs:
           run-go-tests --path test --timeout 60m | tee /tmp/logs/all.log
         no_output_timeout: 3600s
     - run:
-        command: terraform plan
+        command: |
+          terraform init 
+          terraform plan
         when: always
     - store_artifacts:
         path: /tmp/logs
