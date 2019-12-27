@@ -14,9 +14,8 @@ defaults: &defaults
     KUBECONFIG: /home/circleci/.kube/config
 
 install_gruntwork_utils: &install_gruntwork_utils
-  name: install gruntwork utils
+  name: install kubergrunt and terraform utils
   command: |
-    curl -Ls https://raw.githubusercontent.com/gruntwork-io/gruntwork-installer/master/bootstrap-gruntwork-installer.sh | bash /dev/stdin --version "${GRUNTWORK_INSTALLER_VERSION}"
     curl -Lo terraform.zip https://releases.hashicorp.com/terraform/0.12.18/terraform_0.12.18_linux_amd64.zip
     unzip terraform.zip
     chmod +x terraform
@@ -80,11 +79,6 @@ jobs:
     - run:
         <<: *install_helm_client
 
-    # Install kubergrunt
-    - run:
-        name: Install kubergrunt
-        command: gruntwork-install --binary-name "kubergrunt" --repo "https://github.com/gruntwork-io/kubergrunt" --tag "${KUBERGRUNT_VERSION}"
-
     - run:
         name: update gcloud
         command: |
@@ -111,7 +105,7 @@ jobs:
           run-go-tests --path test --timeout 60m | tee /tmp/logs/all.log
         no_output_timeout: 3600s
     - run:
-        command: terratest_log_parser --testlog /tmp/logs/all.log --outputdir /tmp/logs
+        command: terraform plan
         when: always
     - store_artifacts:
         path: /tmp/logs
