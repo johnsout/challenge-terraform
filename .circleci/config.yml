@@ -95,12 +95,14 @@ jobs:
         command: |
           mkdir -p /tmp/logs
           # required for gcloud and kubectl to authenticate correctly
-          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-          # required for terraform and terratest to authenticate correctly
           echo $GCLOUD_SERVICE_KEY > /home/circleci/serviceaccount.json
           export GOOGLE_APPLICATION_CREDENTIALS="/home/circleci/serviceaccount.json"
+          cat $GOOGLE_APPLICATION_CREDENTIALS
+          gcloud auth activate-service-account --key-file="/home/circleci/serviceaccount.json"
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+          kubectl get ns
+          # required for terraform and terratest to authenticate correctly
         no_output_timeout: 3600s
     - run:
         name: deploy terraform
