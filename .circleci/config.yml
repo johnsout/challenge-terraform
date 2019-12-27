@@ -98,7 +98,7 @@ jobs:
           echo $GCLOUD_SERVICE_KEY > /home/circleci/serviceaccount.json
           export GOOGLE_APPLICATION_CREDENTIALS="/home/circleci/serviceaccount.json"
           cat $GOOGLE_APPLICATION_CREDENTIALS
-          gcloud auth activate-service-account --key-file="/home/circleci/serviceaccount.json"
+          gcloud auth activate-service-account --key-file="/home/circleci/serviceaccount.json" terraform@kubehelmproj001.iam.gserviceaccount.com
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
           kubectl get ns
@@ -108,7 +108,7 @@ jobs:
         name: deploy terraform
         command: |
           terraform init 
-          TF_LOG=DEBUG terraform plan
+          TF_LOG=TRACE terraform plan
         when: always
     - store_artifacts:
         path: /tmp/logs
