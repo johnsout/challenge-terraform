@@ -84,7 +84,7 @@ jobs:
         command: |
           sudo apt-get remove -y google-cloud-sdk
           sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update
-          sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update beta kubectl
+          sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update kubectl
     - run:
         name: configure kubectl
         command: |
@@ -99,8 +99,8 @@ jobs:
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
           # required for terraform and terratest to authenticate correctly
-          echo $GCLOUD_SERVICE_KEY > cred/serviceaccount.json
-          export GOOGLE_APPLICATION_CREDENTIALS="cred/serviceaccount.json"
+          echo $GCLOUD_SERVICE_KEY > /home/circleci/serviceaccount.json
+          export GOOGLE_APPLICATION_CREDENTIALS="/home/circleci/serviceaccount.json"
           # run the tests
           run-go-tests --path test --timeout 60m | tee /tmp/logs/all.log
         no_output_timeout: 3600s
