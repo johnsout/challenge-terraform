@@ -108,7 +108,7 @@ jobs:
         name: deploy terraform
         command: |
           terraform init 
-          TF_LOG=TRACE terraform plan
+          terraform plan
         when: always
     - store_artifacts:
         path: /tmp/logs
