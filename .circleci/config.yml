@@ -101,13 +101,12 @@ jobs:
           # required for terraform and terratest to authenticate correctly
           echo $GCLOUD_SERVICE_KEY > /home/circleci/serviceaccount.json
           export GOOGLE_APPLICATION_CREDENTIALS="/home/circleci/serviceaccount.json"
-          # run the tests
-          run-go-tests --path test --timeout 60m | tee /tmp/logs/all.log
         no_output_timeout: 3600s
     - run:
+        name: deploy terraform
         command: |
           terraform init 
-          terraform plan
+          TF_LOG=DEBUG terraform plan
         when: always
     - store_artifacts:
         path: /tmp/logs
