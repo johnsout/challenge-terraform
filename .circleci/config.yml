@@ -21,8 +21,9 @@ install_gruntwork_utils: &install_gruntwork_utils
     unzip terraform.zip
     chmod +x terraform
     sudo mv terraform /usr/local/bin/
-#    gruntwork-install --binary-name "kubergrunt" --repo "https://github.com/gruntwork-io/kubergrunt" --tag "v0.5.8"
-
+    curl -Lo kubergrunt https://github.com/gruntwork-io/kubergrunt/releases/download/v0.5.8/kubergrunt_linux_amd64
+    chmod +x kubergrunt 
+    sudo mv kubergrunt /usr/local/bin
 
 install_helm_client: &install_helm_client
   name: install helm client
