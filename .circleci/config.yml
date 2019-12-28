@@ -1,37 +1,34 @@
 defaults: &defaults
   machine: true
   environment:
-    GRUNTWORK_INSTALLER_VERSION: v0.0.22
-    TERRATEST_LOG_PARSER_VERSION: v0.13.13
-    KUBERGRUNT_VERSION: v0.3.9
-    HELM_VERSION: v2.11.0
-    MODULE_CI_VERSION: v0.13.3
-    TERRAFORM_VERSION: 0.12.7
-    TERRAGRUNT_VERSION: NONE
-    PACKER_VERSION: NONE
-    GOLANG_VERSION: 1.11.2
-    K8S_VERSION: v1.10.0
+    TERRAFORM_VERSION: 0.12.18
+    KUBERGRUNT_VERSION: v0.5.8
+    HELM_VERSION: v2.16.1
+    HELMFILE_VERSION: v0.98.1
     KUBECONFIG: /home/circleci/.kube/config
 
 install_gruntwork_utils: &install_gruntwork_utils
   name: install kubergrunt and terraform utils
   command: |
-    curl -Lo terraform.zip https://releases.hashicorp.com/terraform/0.12.18/terraform_0.12.18_linux_amd64.zip
+    curl -Lo terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
     unzip terraform.zip
     chmod +x terraform
     sudo mv terraform /usr/local/bin/
-    curl -Lo kubergrunt https://github.com/gruntwork-io/kubergrunt/releases/download/v0.5.8/kubergrunt_linux_amd64
+    curl -Lo kubergrunt https://github.com/gruntwork-io/kubergrunt/releases/download/${KUBERGRUNT_VERSION}/kubergrunt_linux_amd64
     chmod +x kubergrunt 
     sudo mv kubergrunt /usr/local/bin
 
 install_helm_client: &install_helm_client
-  name: install helm client
+  name: install helm client and helmfile
   command: |
     # install helm client
     curl -Lo helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz
     tar -xvf helm.tar.gz
     chmod +x linux-amd64/helm
     sudo mv linux-amd64/helm /usr/local/bin/
+    curl -Lo helmfile https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION/helmfile_linux_amd64
+    chmod +x helmfile
+    sudo mv helmfile /usr/local/bin
 
 version: 2
 jobs:
@@ -63,15 +60,14 @@ jobs:
           paths:
             - project
             - terraform
-            - packer
 
-  test:
+  terraform:
     <<: *defaults
     steps:
     - attach_workspace:
         at: /home/circleci
     - checkout
-    - run: echo 'export PATH=$HOME/terraform:$HOME/packer:$PATH' >> $BASH_ENV
+    - run: echo 'export PATH=$HOME/terraform:$HOME/' >> $BASH_ENV
     - run:
         <<: *install_gruntwork_utils
 
@@ -98,19 +94,28 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="/home/circleci/serviceaccount.json"
           gcloud auth activate-service-account --key-file="/home/circleci/serviceaccount.json" 
           gcloud auth application-default print-access-token
+          terraform destroy -auto-approve
           terraform init
           terraform apply -auto-approve
         no_output_timeout: 12m 
-    - store_artifacts:
-        path: /tmp/logs
-    - store_test_results:
-        path: /tmp/logs
+
+     - run:
+         name: checkout Helm project
+         command: git clone https://github.com/johnsout/challenge-helmfile.git
+
+     - run:
+         name: deploy helmfile environments
+         command: |
+           cd challenge-helmfile
+           helmfile -e dev apply
+           helmfile -e stage apply
+
 
 workflows:
   version: 2
   build-and-test:
     jobs:
     - build
-    - test:
+    - terraform:
         requires:
         - build
