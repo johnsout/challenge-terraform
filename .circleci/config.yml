@@ -101,7 +101,6 @@ jobs:
           gcloud auth activate-service-account --key-file="/home/circleci/serviceaccount.json" terraform@kubehelmproj001.iam.gserviceaccount.com
           #gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
           #gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-          kubectl get ns
           gcloud auth application-default print-access-token
           terraform init
           terraform plan
