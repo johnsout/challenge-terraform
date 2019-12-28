@@ -99,9 +99,12 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="/home/circleci/serviceaccount.json"
           cat $GOOGLE_APPLICATION_CREDENTIALS
           gcloud auth activate-service-account --key-file="/home/circleci/serviceaccount.json" terraform@kubehelmproj001.iam.gserviceaccount.com
-          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+          #gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          #gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
           kubectl get ns
+          gcloud auth application-default print-access-token
+          terraform init
+          terraform plan
           # required for terraform and terratest to authenticate correctly
         no_output_timeout: 3600s
     - run:
