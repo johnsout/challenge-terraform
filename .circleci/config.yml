@@ -99,7 +99,7 @@ jobs:
           gcloud auth activate-service-account --key-file="/home/circleci/serviceaccount.json" 
           gcloud auth application-default print-access-token
           terraform init
-          terraform plan -auto-approve
+          terraform apply -auto-approve
         no_output_timeout: 12m 
     - store_artifacts:
         path: /tmp/logs
